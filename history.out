@@ -1,0 +1,240 @@
+    1  sudo poweroff
+    2  ip -br address
+    3  sudo systemctl status sshd --no-pager
+    4  sudo poweroff
+    5  whoami
+    6  sudo -v
+    7  hostnamectl
+    8  sudo hostnamectl set-hostname [LAB_HOSTNAME]
+    9  hostnamectl --static
+   10  ping -c 4 8.8.8.8 | tee ~/ping.out
+   11  ip -br address
+   12  ip route
+   13  ping -c 4 [VIRTUALBOX_GATEWAY]
+   14  getent hosts redos.ru
+   15  ping 8.8.8.8
+   16  curl -I --connect-timeout 10 https://redos.ru
+   17  curl -v --connect-timeout 10 https://redos.ru -o /dev/null
+   18  timedatectl
+   19  curl -Iv --connect-timeout 10 https://example.com
+   20  sudo systemctl status chronyd --no-pager
+   21  chronyc tracking
+   22  chronyc sources -v
+   23  sudo chronyc activity
+   24  cat /etc/chrony.conf
+   25  sudo chronyc burst 4/4
+   26  chronyc sources -v
+   27  sudo journalctl -u chronyd -b --no-pager -n 40
+   28  sudo firewall-cmd --state
+   29  systemctl status chronyd --no-pager -l
+   30  sudo chronyc ntpdata ntp1.vniiftri.ru
+   31  sudo chronyc ntpdata ntp2.vniiftri.ru
+   32  sudo chronyc add server time.cloudflare.com iburst
+   33  sudo chronyc burst 4/4
+   34  chronyc sources -v
+   35  sudo chronyc ntpdata time.cloudflare.com
+   36  getent ahostsv4 time.cloudflare.com
+   37  chronyc activity
+   38  chronyc -n sources -v
+   39  command -v tcpdump
+   40  rpm -q tcpdump
+   41  sudo dnf download tcpdump --destdir=/tmp
+   42  ls -lh /tmp/tcpdump*.rpm
+   43  sudo rpm -i /tmp/tcpdump-4.99.5-1.red80.x86_64.rpm
+   44  rpm -q tcpdump
+   45  tcpdump --version
+   46  sudo tcpdump -ni enp0s3 'udp port 123'
+   47  sudo tcpdump -ni enp0s3 'udp port 53'
+   48  sudo poweroff
+   49  sudo chronyc burst 4/4
+   50  getent hosts example.com
+   51  ping -c 4 [INTERNAL_NTP_SERVER]
+   52  ip route
+   53  sudo chronyc add server [INTERNAL_NTP_SERVER] iburst
+   54  sudo chronyc burst 4/4
+   55  chronyc sources -v
+   56  chronyc tracking
+   57  grep -nE '^(server|pool)' /etc/chrony.conf
+   58  sudo nano /etc/chrony.conf
+   59  sudo systemctl restart chronyd
+   60  systemctl status chronyd --no-pager
+   61  chronyc sources -v
+   62  chronyc tracking
+   63  sudo chronyc burst 4/4
+   64  sleep 15
+   65  chronyc sources -v
+   66  chronyc tracking
+   67  grep -nE '^(server|pool)' /etc/chrony.conf
+   68  sudo chronyc burst 4/4
+   69  chronyc sources -v
+   70  chronyc tracking
+   71  sudo dnf update -y
+   72  echo $?
+   73  sudo dnf install -y nginx libcap-ng-utils
+   74  rpm -q nginx libcap-ng-utils
+   75  sudo dnf history > ~/dnf.out
+   76  ls -lh ~/dnf.out
+   77  head -20 ~/dnf.out
+   78  ls -lh /tmp/tcpdump*.rpm
+   79  sudo dnf download tcpdump --destdir=/tmp
+   80  ls -lh /tmp/tcpdump*.rpm
+   81  rpm -q tcpdump
+   82  sudo poweroff
+   83  lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS
+   84  sudo parted /dev/sdb --script mklabel gpt
+   85  sudo parted /dev/sdb --script mkpart primary ext4 1MiB 100%
+   86  lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINTS
+   87  sudo parted /dev/sdb print
+   88  sudo mkfs.ext4 -L MEPHI_WEB /dev/sdb1
+   89  sudo blkid /dev/sdb1
+   90  lsblk -f
+   91  sudo mkdir -p /mephi-web
+   92  sudo mount LABEL=MEPHI_WEB /mephi-web
+   93  findmnt /mephi-web
+   94  df -hT /mephi-web
+   95  sudo cp /etc/fstab /etc/fstab.bak
+   96  sudo nano /etc/fstab
+   97  sudo findmnt --verify
+   98  sudo umount /mephi-web
+   99  sudo mount -a
+  100  findmnt /mephi-web
+  101  cat -n /etc/fstab
+  102  sudo blkid /dev/sdb1
+  103  sudo mount -av
+  104  findmnt /mephi-web
+  105  sudo nano /etc/fstab
+  106  cat -n /etc/fstab
+  107  sudo systemctl daemon-reload
+  108  sudo findmnt --verify
+  109  sudo mount -av
+  110  findmnt /mephi-web
+  111  df -hT /mephi-web
+  112  sudo systemctl start nginx
+  113  sudo systemctl enable nginx
+  114  systemctl status nginx --no-pager
+  115  sudo journalctl -u nginx -b > ~/journalctl.out
+  116  ls -lh ~/journalctl.out
+  117  curl -I http://localhost
+  118  sudo nginx -T 2>/dev/null | grep -E '^\s*root '
+  119  sudo nginx -T 2>/dev/null | grep -nE 'include|server \{|listen|server_name|root'
+  120  ls -l /etc/nginx/conf.d/
+  121  sudo cat /etc/nginx/nginx.conf
+  122  sudo cp -a /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak
+  123  sudo sed -i 's|root         /usr/share/nginx/html;|root         /mephi-web;|' /etc/nginx/nginx.conf
+  124  sudo grep -n 'root ' /etc/nginx/nginx.conf
+  125  getenforce
+  126  command -v semanage
+  127  rpm -q policycoreutils-python-utils
+  128  ls -Zd /mephi-web
+  129  ls -Zd /usr/share/nginx/html
+  130  sudo dnf install -y policycoreutils-python-utils
+  131  sudo semanage fcontext -a -t httpd_sys_content_t '/mephi-web(/.*)?'
+  132  sudo restorecon -Rv /mephi-web
+  133  ls -Zd /mephi-web
+  134  sudo nginx -t
+  135  sudo systemctl reload nginx
+  136  systemctl status nginx --no-pager
+  137  curl -I http://localhost
+  138  echo 'Hello from Student: М265288' | sudo tee /mephi-web/index.html
+  139  sudo chown root:root /mephi-web/index.html
+  140  sudo chmod 644 /mephi-web/index.html
+  141  sudo restorecon -v /mephi-web/index.html
+  142  ls -lZ /mephi-web/index.html
+  143  curl http://localhost
+  144  curl http://localhost | tee ~/curl.out
+  145  getent passwd 5501 5502 5503
+  146  getent group 4444
+  147  getent passwd user1 user2 user3 curator1 curator2
+  148  getent passwd 5501 5502 5503
+  149  getent group 4444
+  150  sudo groupadd -g 4444 curators
+  151  getent group curators
+  152  sudo useradd -u 5501 -m -s /bin/bash user1
+  153  sudo useradd -u 5502 -m -s /bin/bash user2
+  154  sudo useradd -u 5503 -m -s /bin/bash user3
+  155  sudo useradd -m -s /bin/bash -G curators curator1
+  156  sudo useradd -m -s /bin/bash -G curators curator2
+  157  id user1
+  158  id user2
+  159  id user3
+  160  id curator1
+  161  id curator2
+  162  getent group curators
+  163  sudo groupadd developers
+  164  sudo usermod -aG developers user1
+  165  sudo usermod -aG developers user2
+  166  sudo usermod -aG developers user3
+  167  getent group developers
+  168  sudo mkdir -p /data/mephi-2026
+  169  sudo chown root:developers /data/mephi-2026
+  170  sudo chmod 2770 /data/mephi-2026
+  171  ls -ld /data/mephi-2026
+  172  getent group developers
+  173  command -v setfacl
+  174  command -v getfacl
+  175  sudo setfacl -m g:developers:rwx,g:curators:rx,o::--- /data/mephi-2026
+  176  sudo setfacl -d -m u::rwx,g::rwx,g:developers:rwx,g:curators:rx,m::rwx,o::--- /data/mephi-2026
+  177  getfacl /data/mephi-2026
+  178  sudo -u user1 bash -c 'echo "Test file created by user1" > /data/mephi-2026/test.txt'
+  179  ls -l /data/mephi-2026/test.txt
+  180  getfacl /data/mephi-2026/test.txt
+  181  sudo -u user2 cat /data/mephi-2026/test.txt
+  182  sudo -u user2 bash -c 'echo "Modified by user2" >> /data/mephi-2026/test.txt'
+  183  sudo -u curator1 cat /data/mephi-2026/test.txt
+  184  sudo -u curator1 bash -c 'echo "Unauthorized modification" >> /data/mephi-2026/test.txt'
+  185  sudo ls -l /data/mephi-2026/test.txt
+  186  sudo getfacl /data/mephi-2026/test.txt
+  187  sudo -u user3 cat /data/mephi-2026/test.txt
+  188  sudo -u nobody cat /data/mephi-2026/test.txt
+  189  getcap /usr/sbin/tcpdump
+  190  ls -l /usr/sbin/tcpdump
+  191  command -v tcpdump
+  192  command -v setcap
+  193  sudo setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump
+  194  getcap /usr/sbin/tcpdump
+  195  ls -l /usr/sbin/tcpdump
+  196  sudo -u nobody tcpdump -D
+  197  sudo -u nobody timeout 10 tcpdump -i lo -c 3 -nn
+  198  getcap /usr/sbin/tcpdump
+  199  sudo getcap -v /usr/sbin/tcpdump
+  200  getcap /usr/sbin/tcpdump | tee ~/getcap.out
+  201  cat ~/getcap.out
+  202  sudo grep -vE '^\s*#|^\s*$' /etc/security/pwquality.conf
+  203  sudo grep -nE 'pam_securetty|pam_faillock|pam_unix' /etc/pam.d/login
+  204  sudo ls -l /etc/securetty
+  205  sudo chage -l curator1
+  206  sudo cat /etc/pam.d/login
+  207  sudo cat /etc/pam.d/system-auth
+  208  sudo cat /etc/pam.d/password-auth
+  209  sudo cat /etc/security/access.conf | tail -n 30
+  210  rpm -q pam
+  211  sudo ls -l /usr/lib64/security/pam_access.so
+  212  sudo cp -a /etc/pam.d/login /etc/pam.d/login.bak
+  213  sudo cp -a /etc/security/access.conf /etc/security/access.conf.bak
+  214  sudo cp -a /etc/security/pwquality.conf /etc/security/pwquality.conf.bak
+  215  printf '%s\n' '-:curator1:LOCAL' '-:curator2:LOCAL' | sudo tee -a /etc/security/access.conf
+  216  sudo sed -i '/^account[[:space:]]*include[[:space:]]*system-auth/i account    required     pam_access.so accessfile=/etc/security/access.conf' /etc/pam.d/login
+  217  printf '\n# Laboratory password policy\nminlen = 12\n' | sudo tee -a /etc/security/pwquality.conf
+  218  for user in user1 user2 user3 curator1 curator2; do     sudo chage -M 90 "$user"; done
+  219  sudo grep -n 'pam_access' /etc/pam.d/login
+  220  sudo grep -vE '^\s*#|^\s*$' /etc/security/access.conf
+  221  sudo grep -E '^[[:space:]]*minlen' /etc/security/pwquality.conf
+  222  for user in user1 user2 user3 curator1 curator2; do     echo "===== $user =====";     sudo chage -l "$user" | grep -E 'Последний раз|истекает|Максимальное'; done
+  223  sudo passwd -S curator1
+  224  sudo passwd curator1
+  225  sudo passwd -S curator1
+  226  sudo journalctl -b | grep -Ei 'pam_access|access denied|permission denied' | tail -n 20
+  227  sudo grep -n 'pam_access' /etc/pam.d/sshd
+  228  sudo passwd -S curator2
+  229  [admin@mephi-2026 ~]$ sudo grep -n 'pam_access' /etc/pam.d/sshd
+  230  sudo passwd -S curator2
+  231  curator2 LK 2026-11-24 0 90 7 -1 (Пароль заблокирован.)
+  232  [admin@mephi-2026 ~]$
+  233  sudo grep -n 'pam_access' /etc/pam.d/sshd
+  234  sudo passwd -S curator2
+  235  sudo passwd -l curator1
+  236  sudo passwd -l curator2
+  237  sudo passwd -S curator1
+  238  sudo passwd -S curator2
+  239  history -a
+  240  history > ~/history.out
